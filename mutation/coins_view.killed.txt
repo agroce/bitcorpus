@@ -24,3 +24,9 @@ tx_verify.mutant.429.cpp
 tx_verify.mutant.243.cpp
 tx_verify.mutant.255.cpp
 tx_verify.mutant.301.cpp
+tx_verify.mutant.383.cpp
+tx_verify.mutant.222.cpp
+tx_verify.mutant.223.cpp
+tx_verify.mutant.228.cpp
+tx_verify.mutant.220.cpp
+tx_verify.mutant.357.cpp
