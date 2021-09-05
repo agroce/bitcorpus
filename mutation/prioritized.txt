@@ -1,0 +1,1993 @@
+READ 90 MUTANTS
+********************************************************************************
+MUTANT #1:
+tx_verify.mutant.405.cpp: src/consensus/tx_verify.cpp:191
+*** Original
+--- Mutant
+***************
+*** 188,194 ****
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+!             return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
+          }
+      }
+  
+--- 188,194 ----
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+!             /*return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");*/
+          }
+      }
+  
+
+
+********************************************************************************
+MUTANT #2:
+tx_verify.mutant.184.cpp: src/consensus/tx_verify.cpp:103
+*** Original
+--- Mutant
+***************
+*** 100,106 ****
+  
+  bool EvaluateSequenceLocks(const CBlockIndex& block, std::pair<int, int64_t> lockPair)
+  {
+!     assert(block.pprev);
+      int64_t nBlockTime = block.pprev->GetMedianTimePast();
+      if (lockPair.first >= block.nHeight || lockPair.second >= nBlockTime)
+          return false;
+--- 100,106 ----
+  
+  bool EvaluateSequenceLocks(const CBlockIndex& block, std::pair<int, int64_t> lockPair)
+  {
+!     /*assert(block.pprev);*/
+      int64_t nBlockTime = block.pprev->GetMedianTimePast();
+      if (lockPair.first >= block.nHeight || lockPair.second >= nBlockTime)
+          return false;
+
+
+********************************************************************************
+MUTANT #3:
+tx_verify.mutant.217.cpp: src/consensus/tx_verify.cpp:121
+*** Original
+--- Mutant
+***************
+*** 118,124 ****
+      unsigned int nSigOps = 0;
+      for (const auto& txin : tx.vin)
+      {
+!         nSigOps += txin.scriptSig.GetSigOpCount(false);
+      }
+      for (const auto& txout : tx.vout)
+      {
+--- 118,124 ----
+      unsigned int nSigOps = 0;
+      for (const auto& txin : tx.vin)
+      {
+!         /*nSigOps += txin.scriptSig.GetSigOpCount(false);*/
+      }
+      for (const auto& txout : tx.vout)
+      {
+
+
+********************************************************************************
+MUTANT #4:
+tx_verify.mutant.61.cpp: src/consensus/tx_verify.cpp:41
+*** Original
+--- Mutant
+***************
+*** 38,44 ****
+  
+  std::pair<int, int64_t> CalculateSequenceLocks(const CTransaction &tx, int flags, std::vector<int>& prevHeights, const CBlockIndex& block)
+  {
+!     assert(prevHeights.size() == tx.vin.size());
+  
+      // Will be set to the equivalent height- and time-based nLockTime
+      // values that would be necessary to satisfy all relative lock-
+--- 38,44 ----
+  
+  std::pair<int, int64_t> CalculateSequenceLocks(const CTransaction &tx, int flags, std::vector<int>& prevHeights, const CBlockIndex& block)
+  {
+!     /*assert(prevHeights.size() == tx.vin.size());*/
+  
+      // Will be set to the equivalent height- and time-based nLockTime
+      // values that would be necessary to satisfy all relative lock-
+
+
+********************************************************************************
+MUTANT #5:
+tx_verify.mutant.258.cpp: src/consensus/tx_verify.cpp:139
+*** Original
+--- Mutant
+***************
+*** 136,142 ****
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+      {
+          const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
+!         assert(!coin.IsSpent());
+          const CTxOut &prevout = coin.out;
+          if (prevout.scriptPubKey.IsPayToScriptHash())
+              nSigOps += prevout.scriptPubKey.GetSigOpCount(tx.vin[i].scriptSig);
+--- 136,142 ----
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+      {
+          const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
+!         /*assert(!coin.IsSpent());*/
+          const CTxOut &prevout = coin.out;
+          if (prevout.scriptPubKey.IsPayToScriptHash())
+              nSigOps += prevout.scriptPubKey.GetSigOpCount(tx.vin[i].scriptSig);
+
+
+********************************************************************************
+MUTANT #6:
+tx_verify.mutant.427.cpp: src/consensus/tx_verify.cpp:204
+*** Original
+--- Mutant
+***************
+*** 201,207 ****
+      // Tally transaction fees
+      const CAmount txfee_aux = nValueIn - value_out;
+      if (!MoneyRange(txfee_aux)) {
+!         return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-fee-outofrange");
+      }
+  
+      txfee = txfee_aux;
+--- 201,207 ----
+      // Tally transaction fees
+      const CAmount txfee_aux = nValueIn - value_out;
+      if (!MoneyRange(txfee_aux)) {
+!         /*return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-fee-outofrange");*/
+      }
+  
+      txfee = txfee_aux;
+
+
+********************************************************************************
+MUTANT #7:
+tx_verify.mutant.315.cpp: src/consensus/tx_verify.cpp:161
+*** Original
+--- Mutant
+***************
+*** 158,164 ****
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+      {
+          const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
+!         assert(!coin.IsSpent());
+          const CTxOut &prevout = coin.out;
+          nSigOps += CountWitnessSigOps(tx.vin[i].scriptSig, prevout.scriptPubKey, &tx.vin[i].scriptWitness, flags);
+      }
+--- 158,164 ----
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+      {
+          const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
+!         /*assert(!coin.IsSpent());*/
+          const CTxOut &prevout = coin.out;
+          nSigOps += CountWitnessSigOps(tx.vin[i].scriptSig, prevout.scriptPubKey, &tx.vin[i].scriptWitness, flags);
+      }
+
+
+********************************************************************************
+MUTANT #8:
+tx_verify.mutant.403.cpp: src/consensus/tx_verify.cpp:192
+*** Original
+--- Mutant
+***************
+*** 189,194 ****
+--- 189,195 ----
+          nValueIn += coin.out.nValue;
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
++             continue;
+          }
+      }
+  
+
+
+********************************************************************************
+MUTANT #9:
+tx_verify.mutant.208.cpp: src/consensus/tx_verify.cpp:121
+*** Original
+--- Mutant
+***************
+*** 118,123 ****
+--- 118,124 ----
+      unsigned int nSigOps = 0;
+      for (const auto& txin : tx.vin)
+      {
++     break;
+          nSigOps += txin.scriptSig.GetSigOpCount(false);
+      }
+      for (const auto& txout : tx.vout)
+
+
+********************************************************************************
+MUTANT #10:
+tx_verify.mutant.404.cpp: src/consensus/tx_verify.cpp:191
+*** Original
+--- Mutant
+***************
+*** 188,194 ****
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+!             return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
+          }
+      }
+  
+--- 188,194 ----
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+!             return state.Invalid(TxValidationResult::TX_CONSENSUS, "");
+          }
+      }
+  
+
+
+********************************************************************************
+MUTANT #11:
+tx_verify.mutant.287.cpp: src/consensus/tx_verify.cpp:154
+*** Original
+--- Mutant
+***************
+*** 151,157 ****
+      if (tx.IsCoinBase())
+          return nSigOps;
+  
+!     if (flags & SCRIPT_VERIFY_P2SH) {
+          nSigOps += GetP2SHSigOpCount(tx, inputs) * WITNESS_SCALE_FACTOR;
+      }
+  
+--- 151,157 ----
+      if (tx.IsCoinBase())
+          return nSigOps;
+  
+!     if (1) {
+          nSigOps += GetP2SHSigOpCount(tx, inputs) * WITNESS_SCALE_FACTOR;
+      }
+  
+
+
+********************************************************************************
+MUTANT #12:
+tx_verify.mutant.424.cpp: src/consensus/tx_verify.cpp:203
+*** Original
+--- Mutant
+***************
+*** 200,206 ****
+  
+      // Tally transaction fees
+      const CAmount txfee_aux = nValueIn - value_out;
+!     if (!MoneyRange(txfee_aux)) {
+          return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-fee-outofrange");
+      }
+  
+--- 200,206 ----
+  
+      // Tally transaction fees
+      const CAmount txfee_aux = nValueIn - value_out;
+!     if (0) {
+          return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-fee-outofrange");
+      }
+  
+
+
+********************************************************************************
+MUTANT #13:
+tx_verify.mutant.21.cpp: src/consensus/tx_verify.cpp:19
+*** Original
+--- Mutant
+***************
+*** 16,22 ****
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+!     if (tx.nLockTime == 0)
+          return true;
+      if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+--- 16,22 ----
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+!     if (0)
+          return true;
+      if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+
+
+********************************************************************************
+MUTANT #14:
+tx_verify.mutant.106.cpp: src/consensus/tx_verify.cpp:70
+*** Original
+--- Mutant
+***************
+*** 67,72 ****
+--- 67,73 ----
+          // treated as relative lock-times, nor are they given any
+          // consensus-enforced meaning at this point.
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_DISABLE_FLAG) {
++         continue;
+              // The height of this input is not relevant for sequence locks
+              prevHeights[txinIndex] = 0;
+              continue;
+
+
+********************************************************************************
+MUTANT #15:
+tx_verify.mutant.63.cpp: src/consensus/tx_verify.cpp:48
+*** Original
+--- Mutant
+***************
+*** 45,51 ****
+      // time constraints given our view of block chain history.
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+!     int nMinHeight = -1;
+      int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+--- 45,51 ----
+      // time constraints given our view of block chain history.
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+!     int nMinHeight = 1;
+      int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+
+
+********************************************************************************
+MUTANT #16:
+tx_verify.mutant.400.cpp: src/consensus/tx_verify.cpp:190
+*** Original
+--- Mutant
+***************
+*** 187,193 ****
+  
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
+!         if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
+          }
+      }
+--- 187,193 ----
+  
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
+!         if (0) {
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
+          }
+      }
+
+
+********************************************************************************
+MUTANT #17:
+tx_verify.mutant.231.cpp: src/consensus/tx_verify.cpp:132
+*** Original
+--- Mutant
+***************
+*** 129,135 ****
+  
+  unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
+  {
+!     if (tx.IsCoinBase())
+          return 0;
+  
+      unsigned int nSigOps = 0;
+--- 129,135 ----
+  
+  unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
+  {
+!     if (0)
+          return 0;
+  
+      unsigned int nSigOps = 0;
+
+
+********************************************************************************
+MUTANT #18:
+tx_verify.mutant.143.cpp: src/consensus/tx_verify.cpp:78
+*** Original
+--- Mutant
+***************
+*** 75,81 ****
+          int nCoinHeight = prevHeights[txinIndex];
+  
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG) {
+!             int64_t nCoinTime = block.GetAncestor(std::max(nCoinHeight-1, 0))->GetMedianTimePast();
+              // NOTE: Subtract 1 to maintain nLockTime semantics
+              // BIP 68 relative lock times have the semantics of calculating
+              // the first block or time at which the transaction would be
+--- 75,81 ----
+          int nCoinHeight = prevHeights[txinIndex];
+  
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG) {
+!             int64_t nCoinTime = block.GetAncestor(std::max( 0,nCoinHeight-1))->GetMedianTimePast();
+              // NOTE: Subtract 1 to maintain nLockTime semantics
+              // BIP 68 relative lock times have the semantics of calculating
+              // the first block or time at which the transaction would be
+
+
+********************************************************************************
+MUTANT #19:
+tx_verify.mutant.154.cpp: src/consensus/tx_verify.cpp:92
+*** Original
+--- Mutant
+***************
+*** 89,95 ****
+              // smallest allowed timestamp of the block containing the
+              // txout being spent, which is the median time past of the
+              // block prior.
+!             nMinTime = std::max(nMinTime, nCoinTime + (int64_t)((txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) << CTxIn::SEQUENCE_LOCKTIME_GRANULARITY) - 1);
+          } else {
+              nMinHeight = std::max(nMinHeight, nCoinHeight + (int)(txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) - 1);
+          }
+--- 89,95 ----
+              // smallest allowed timestamp of the block containing the
+              // txout being spent, which is the median time past of the
+              // block prior.
+!             nMinTime = std::max(nMinTime, nCoinTime + (int64_t)((txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) << CTxIn::SEQUENCE_LOCKTIME_GRANULARITY) - (1+1));
+          } else {
+              nMinHeight = std::max(nMinHeight, nCoinHeight + (int)(txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) - 1);
+          }
+
+
+********************************************************************************
+MUTANT #20:
+tx_verify.mutant.394.cpp: src/consensus/tx_verify.cpp:190
+*** Original
+--- Mutant
+***************
+*** 187,193 ****
+  
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
+!         if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
+          }
+      }
+--- 187,193 ----
+  
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
+!         if (!MoneyRange(coin.out.nValue) && !MoneyRange(nValueIn)) {
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
+          }
+      }
+
+
+********************************************************************************
+MUTANT #21:
+tx_verify.mutant.53.cpp: src/consensus/tx_verify.cpp:35
+*** Original
+--- Mutant
+***************
+*** 32,37 ****
+--- 32,38 ----
+      for (const auto& txin : tx.vin) {
+          if (!(txin.nSequence == CTxIn::SEQUENCE_FINAL))
+              return false;
++             break;
+      }
+      return true;
+  }
+
+
+********************************************************************************
+MUTANT #22:
+tx_verify.mutant.6.cpp: src/consensus/tx_verify.cpp:10
+*** Original
+--- Mutant
+***************
+*** 7,13 ****
+  #include <consensus/consensus.h>
+  #include <primitives/transaction.h>
+  #include <script/interpreter.h>
+! #include <consensus/validation.h>
+  
+  // TODO remove the following dependencies
+  #include <chain.h>
+--- 7,13 ----
+  #include <consensus/consensus.h>
+  #include <primitives/transaction.h>
+  #include <script/interpreter.h>
+! #include <consensus/validation.h>=
+  
+  // TODO remove the following dependencies
+  #include <chain.h>
+
+
+********************************************************************************
+MUTANT #23:
+tx_verify.mutant.271.cpp: src/consensus/tx_verify.cpp:142
+*** Original
+--- Mutant
+***************
+*** 139,145 ****
+          assert(!coin.IsSpent());
+          const CTxOut &prevout = coin.out;
+          if (prevout.scriptPubKey.IsPayToScriptHash())
+!             nSigOps += prevout.scriptPubKey.GetSigOpCount(tx.vin[i].scriptSig);
+      }
+      return nSigOps;
+  }
+--- 139,145 ----
+          assert(!coin.IsSpent());
+          const CTxOut &prevout = coin.out;
+          if (prevout.scriptPubKey.IsPayToScriptHash())
+!             nSigOps =+ prevout.scriptPubKey.GetSigOpCount(tx.vin[i].scriptSig);
+      }
+      return nSigOps;
+  }
+
+
+********************************************************************************
+MUTANT #24:
+tx_verify.mutant.234.cpp: src/consensus/tx_verify.cpp:133
+*** Original
+--- Mutant
+***************
+*** 130,136 ****
+  unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
+  {
+      if (tx.IsCoinBase())
+!         return 0;
+  
+      unsigned int nSigOps = 0;
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+--- 130,136 ----
+  unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
+  {
+      if (tx.IsCoinBase())
+!         return -1;
+  
+      unsigned int nSigOps = 0;
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+
+
+********************************************************************************
+MUTANT #25:
+tx_verify.mutant.397.cpp: src/consensus/tx_verify.cpp:191
+*** Original
+--- Mutant
+***************
+*** 188,193 ****
+--- 188,194 ----
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
++         break;
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
+          }
+      }
+
+
+********************************************************************************
+MUTANT #26:
+tx_verify.mutant.284.cpp: src/consensus/tx_verify.cpp:154
+*** Original
+--- Mutant
+***************
+*** 151,157 ****
+      if (tx.IsCoinBase())
+          return nSigOps;
+  
+!     if (flags & SCRIPT_VERIFY_P2SH) {
+          nSigOps += GetP2SHSigOpCount(tx, inputs) * WITNESS_SCALE_FACTOR;
+      }
+  
+--- 151,157 ----
+      if (tx.IsCoinBase())
+          return nSigOps;
+  
+!     if (flags | SCRIPT_VERIFY_P2SH) {
+          nSigOps += GetP2SHSigOpCount(tx, inputs) * WITNESS_SCALE_FACTOR;
+      }
+  
+
+
+********************************************************************************
+MUTANT #27:
+tx_verify.mutant.14.cpp: src/consensus/tx_verify.cpp:19
+*** Original
+--- Mutant
+***************
+*** 16,22 ****
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+!     if (tx.nLockTime == 0)
+          return true;
+      if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+--- 16,22 ----
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+!     if (tx.nLockTime < 0)
+          return true;
+      if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+
+
+********************************************************************************
+MUTANT #28:
+tx_verify.mutant.94.cpp: src/consensus/tx_verify.cpp:63
+*** Original
+--- Mutant
+***************
+*** 60,66 ****
+          return std::make_pair(nMinHeight, nMinTime);
+      }
+  
+!     for (size_t txinIndex = 0; txinIndex < tx.vin.size(); txinIndex++) {
+          const CTxIn& txin = tx.vin[txinIndex];
+  
+          // Sequence numbers with the most significant bit set are not
+--- 60,66 ----
+          return std::make_pair(nMinHeight, nMinTime);
+      }
+  
+!     for (size_t txinIndex = 0; txinIndex != tx.vin.size(); txinIndex++) {
+          const CTxIn& txin = tx.vin[txinIndex];
+  
+          // Sequence numbers with the most significant bit set are not
+
+
+********************************************************************************
+MUTANT #29:
+tx_verify.mutant.158.cpp: src/consensus/tx_verify.cpp:93
+*** Original
+--- Mutant
+***************
+*** 90,95 ****
+--- 90,96 ----
+              // txout being spent, which is the median time past of the
+              // block prior.
+              nMinTime = std::max(nMinTime, nCoinTime + (int64_t)((txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) << CTxIn::SEQUENCE_LOCKTIME_GRANULARITY) - 1);
++             continue;
+          } else {
+              nMinHeight = std::max(nMinHeight, nCoinHeight + (int)(txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) - 1);
+          }
+
+
+********************************************************************************
+MUTANT #30:
+tx_verify.mutant.426.cpp: src/consensus/tx_verify.cpp:204
+*** Original
+--- Mutant
+***************
+*** 201,207 ****
+      // Tally transaction fees
+      const CAmount txfee_aux = nValueIn - value_out;
+      if (!MoneyRange(txfee_aux)) {
+!         return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-fee-outofrange");
+      }
+  
+      txfee = txfee_aux;
+--- 201,207 ----
+      // Tally transaction fees
+      const CAmount txfee_aux = nValueIn - value_out;
+      if (!MoneyRange(txfee_aux)) {
+!         return state.Invalid(TxValidationResult::TX_CONSENSUS, "");
+      }
+  
+      txfee = txfee_aux;
+
+
+********************************************************************************
+MUTANT #31:
+tx_verify.mutant.236.cpp: src/consensus/tx_verify.cpp:133
+*** Original
+--- Mutant
+***************
+*** 130,136 ****
+  unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
+  {
+      if (tx.IsCoinBase())
+!         return 0;
+  
+      unsigned int nSigOps = 0;
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+--- 130,136 ----
+  unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
+  {
+      if (tx.IsCoinBase())
+!         return (0-1);
+  
+      unsigned int nSigOps = 0;
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+
+
+********************************************************************************
+MUTANT #32:
+tx_verify.mutant.378.cpp: src/consensus/tx_verify.cpp:185
+*** Original
+--- Mutant
+***************
+*** 182,188 ****
+          // If prev is coinbase, check that it's matured
+          if (coin.IsCoinBase() && nSpendHeight - coin.nHeight < COINBASE_MATURITY) {
+              return state.Invalid(TxValidationResult::TX_PREMATURE_SPEND, "bad-txns-premature-spend-of-coinbase",
+!                 strprintf("tried to spend coinbase at depth %d", nSpendHeight - coin.nHeight));
+          }
+  
+          // Check for negative or overflow input values
+--- 182,188 ----
+          // If prev is coinbase, check that it's matured
+          if (coin.IsCoinBase() && nSpendHeight - coin.nHeight < COINBASE_MATURITY) {
+              return state.Invalid(TxValidationResult::TX_PREMATURE_SPEND, "bad-txns-premature-spend-of-coinbase",
+!                 strprintf("tried to spend coinbase at depth %d", nSpendHeight * coin.nHeight));
+          }
+  
+          // Check for negative or overflow input values
+
+
+********************************************************************************
+MUTANT #33:
+tx_verify.mutant.209.cpp: src/consensus/tx_verify.cpp:121
+*** Original
+--- Mutant
+***************
+*** 118,123 ****
+--- 118,124 ----
+      unsigned int nSigOps = 0;
+      for (const auto& txin : tx.vin)
+      {
++     continue;
+          nSigOps += txin.scriptSig.GetSigOpCount(false);
+      }
+      for (const auto& txout : tx.vout)
+
+
+********************************************************************************
+MUTANT #34:
+tx_verify.mutant.69.cpp: src/consensus/tx_verify.cpp:49
+*** Original
+--- Mutant
+***************
+*** 46,52 ****
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+      int nMinHeight = -1;
+!     int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+--- 46,52 ----
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+      int nMinHeight = -1;
+!     int64_t nMinTime = -0;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+
+
+********************************************************************************
+MUTANT #35:
+tx_verify.mutant.4.cpp: src/consensus/tx_verify.cpp:8
+*** Original
+--- Mutant
+***************
+*** 5,11 ****
+  #include <consensus/tx_verify.h>
+  
+  #include <consensus/consensus.h>
+! #include <primitives/transaction.h>
+  #include <script/interpreter.h>
+  #include <consensus/validation.h>
+  
+--- 5,11 ----
+  #include <consensus/tx_verify.h>
+  
+  #include <consensus/consensus.h>
+! /*#include <primitives/transaction.h>*/
+  #include <script/interpreter.h>
+  #include <consensus/validation.h>
+  
+
+
+********************************************************************************
+MUTANT #36:
+tx_verify.mutant.210.cpp: src/consensus/tx_verify.cpp:121
+*** Original
+--- Mutant
+***************
+*** 118,124 ****
+      unsigned int nSigOps = 0;
+      for (const auto& txin : tx.vin)
+      {
+!         nSigOps += txin.scriptSig.GetSigOpCount(false);
+      }
+      for (const auto& txout : tx.vout)
+      {
+--- 118,124 ----
+      unsigned int nSigOps = 0;
+      for (const auto& txin : tx.vin)
+      {
+!         nSigOps -= txin.scriptSig.GetSigOpCount(false);
+      }
+      for (const auto& txout : tx.vout)
+      {
+
+
+********************************************************************************
+MUTANT #37:
+tx_verify.mutant.43.cpp: src/consensus/tx_verify.cpp:33
+*** Original
+--- Mutant
+***************
+*** 30,36 ****
+      // ensuring that an unsatisfied nLockTime value will actually cause
+      // IsFinalTx() to return false here:
+      for (const auto& txin : tx.vin) {
+!         if (!(txin.nSequence == CTxIn::SEQUENCE_FINAL))
+              return false;
+      }
+      return true;
+--- 30,36 ----
+      // ensuring that an unsatisfied nLockTime value will actually cause
+      // IsFinalTx() to return false here:
+      for (const auto& txin : tx.vin) {
+!         if (!(txin.nSequence >= CTxIn::SEQUENCE_FINAL))
+              return false;
+      }
+      return true;
+
+
+********************************************************************************
+MUTANT #38:
+tx_verify.mutant.192.cpp: src/consensus/tx_verify.cpp:105
+*** Original
+--- Mutant
+***************
+*** 102,108 ****
+  {
+      assert(block.pprev);
+      int64_t nBlockTime = block.pprev->GetMedianTimePast();
+!     if (lockPair.first >= block.nHeight || lockPair.second >= nBlockTime)
+          return false;
+  
+      return true;
+--- 102,108 ----
+  {
+      assert(block.pprev);
+      int64_t nBlockTime = block.pprev->GetMedianTimePast();
+!     if (lockPair.first >= block.nHeight || lockPair.second > nBlockTime)
+          return false;
+  
+      return true;
+
+
+********************************************************************************
+MUTANT #39:
+tx_verify.mutant.72.cpp: src/consensus/tx_verify.cpp:54
+*** Original
+--- Mutant
+***************
+*** 51,57 ****
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+      // wouldn't support BIP 68.
+!     bool fEnforceBIP68 = static_cast<uint32_t>(tx.nVersion) >= 2
+                        && flags & LOCKTIME_VERIFY_SEQUENCE;
+  
+      // Do not enforce sequence numbers as a relative lock time
+--- 51,57 ----
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+      // wouldn't support BIP 68.
+!     bool fEnforceBIP68 = static_cast<uint32_t>(tx.nVersion) == 2
+                        && flags & LOCKTIME_VERIFY_SEQUENCE;
+  
+      // Do not enforce sequence numbers as a relative lock time
+
+
+********************************************************************************
+MUTANT #40:
+tx_verify.mutant.62.cpp: src/consensus/tx_verify.cpp:48
+*** Original
+--- Mutant
+***************
+*** 45,51 ****
+      // time constraints given our view of block chain history.
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+!     int nMinHeight = -1;
+      int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+--- 45,51 ----
+      // time constraints given our view of block chain history.
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+!     int nMinHeight = +1;
+      int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+
+
+********************************************************************************
+MUTANT #41:
+tx_verify.mutant.402.cpp: src/consensus/tx_verify.cpp:192
+*** Original
+--- Mutant
+***************
+*** 189,194 ****
+--- 189,195 ----
+          nValueIn += coin.out.nValue;
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
++             break;
+          }
+      }
+  
+
+
+********************************************************************************
+MUTANT #42:
+tx_verify.mutant.70.cpp: src/consensus/tx_verify.cpp:49
+*** Original
+--- Mutant
+***************
+*** 46,52 ****
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+      int nMinHeight = -1;
+!     int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+--- 46,52 ----
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+      int nMinHeight = -1;
+!     int64_t nMinTime = -(1+1);
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+
+
+********************************************************************************
+MUTANT #43:
+tx_verify.mutant.140.cpp: src/consensus/tx_verify.cpp:78
+*** Original
+--- Mutant
+***************
+*** 75,81 ****
+          int nCoinHeight = prevHeights[txinIndex];
+  
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG) {
+!             int64_t nCoinTime = block.GetAncestor(std::max(nCoinHeight-1, 0))->GetMedianTimePast();
+              // NOTE: Subtract 1 to maintain nLockTime semantics
+              // BIP 68 relative lock times have the semantics of calculating
+              // the first block or time at which the transaction would be
+--- 75,81 ----
+          int nCoinHeight = prevHeights[txinIndex];
+  
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG) {
+!             int64_t nCoinTime = block.GetAncestor(std::max(nCoinHeight-1, (0-1)))->GetMedianTimePast();
+              // NOTE: Subtract 1 to maintain nLockTime semantics
+              // BIP 68 relative lock times have the semantics of calculating
+              // the first block or time at which the transaction would be
+
+
+********************************************************************************
+MUTANT #44:
+tx_verify.mutant.54.cpp: src/consensus/tx_verify.cpp:35
+*** Original
+--- Mutant
+***************
+*** 32,37 ****
+--- 32,38 ----
+      for (const auto& txin : tx.vin) {
+          if (!(txin.nSequence == CTxIn::SEQUENCE_FINAL))
+              return false;
++             continue;
+      }
+      return true;
+  }
+
+
+********************************************************************************
+MUTANT #45:
+tx_verify.mutant.135.cpp: src/consensus/tx_verify.cpp:78
+*** Original
+--- Mutant
+***************
+*** 75,81 ****
+          int nCoinHeight = prevHeights[txinIndex];
+  
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG) {
+!             int64_t nCoinTime = block.GetAncestor(std::max(nCoinHeight-1, 0))->GetMedianTimePast();
+              // NOTE: Subtract 1 to maintain nLockTime semantics
+              // BIP 68 relative lock times have the semantics of calculating
+              // the first block or time at which the transaction would be
+--- 75,81 ----
+          int nCoinHeight = prevHeights[txinIndex];
+  
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG) {
+!             int64_t nCoinTime = block.GetAncestor(std::max(nCoinHeight-1, 1))->GetMedianTimePast();
+              // NOTE: Subtract 1 to maintain nLockTime semantics
+              // BIP 68 relative lock times have the semantics of calculating
+              // the first block or time at which the transaction would be
+
+
+********************************************************************************
+MUTANT #46:
+tx_verify.mutant.57.cpp: src/consensus/tx_verify.cpp:41
+*** Original
+--- Mutant
+***************
+*** 38,44 ****
+  
+  std::pair<int, int64_t> CalculateSequenceLocks(const CTransaction &tx, int flags, std::vector<int>& prevHeights, const CBlockIndex& block)
+  {
+!     assert(prevHeights.size() == tx.vin.size());
+  
+      // Will be set to the equivalent height- and time-based nLockTime
+      // values that would be necessary to satisfy all relative lock-
+--- 38,44 ----
+  
+  std::pair<int, int64_t> CalculateSequenceLocks(const CTransaction &tx, int flags, std::vector<int>& prevHeights, const CBlockIndex& block)
+  {
+!     assert(prevHeights.size() <= tx.vin.size());
+  
+      // Will be set to the equivalent height- and time-based nLockTime
+      // values that would be necessary to satisfy all relative lock-
+
+
+********************************************************************************
+MUTANT #47:
+tx_verify.mutant.29.cpp: src/consensus/tx_verify.cpp:21
+*** Original
+--- Mutant
+***************
+*** 18,24 ****
+  {
+      if (tx.nLockTime == 0)
+          return true;
+!     if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+  
+      // Even if tx.nLockTime isn't satisfied by nBlockHeight/nBlockTime, a
+--- 18,24 ----
+  {
+      if (tx.nLockTime == 0)
+          return true;
+!     if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime <= LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+  
+      // Even if tx.nLockTime isn't satisfied by nBlockHeight/nBlockTime, a
+
+
+********************************************************************************
+MUTANT #48:
+tx_verify.mutant.17.cpp: src/consensus/tx_verify.cpp:19
+*** Original
+--- Mutant
+***************
+*** 16,22 ****
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+!     if (tx.nLockTime == 0)
+          return true;
+      if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+--- 16,22 ----
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+!     if (tx.nLockTime == (0+1))
+          return true;
+      if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+
+
+********************************************************************************
+MUTANT #49:
+tx_verify.mutant.15.cpp: src/consensus/tx_verify.cpp:19
+*** Original
+--- Mutant
+***************
+*** 16,22 ****
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+!     if (tx.nLockTime == 0)
+          return true;
+      if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+--- 16,22 ----
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+!     if (tx.nLockTime == 1)
+          return true;
+      if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+
+
+********************************************************************************
+MUTANT #50:
+tx_verify.mutant.249.cpp: src/consensus/tx_verify.cpp:136
+*** Original
+--- Mutant
+***************
+*** 133,139 ****
+          return 0;
+  
+      unsigned int nSigOps = 0;
+!     for (unsigned int i = 0; i < tx.vin.size(); i++)
+      {
+          const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
+          assert(!coin.IsSpent());
+--- 133,139 ----
+          return 0;
+  
+      unsigned int nSigOps = 0;
+!     for (unsigned int i = (0+1); i < tx.vin.size(); i++)
+      {
+          const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
+          assert(!coin.IsSpent());
+
+
+********************************************************************************
+MUTANT #51:
+tx_verify.mutant.112.cpp: src/consensus/tx_verify.cpp:71
+*** Original
+--- Mutant
+***************
+*** 68,74 ****
+          // consensus-enforced meaning at this point.
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_DISABLE_FLAG) {
+              // The height of this input is not relevant for sequence locks
+!             prevHeights[txinIndex] = 0;
+              continue;
+          }
+  
+--- 68,74 ----
+          // consensus-enforced meaning at this point.
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_DISABLE_FLAG) {
+              // The height of this input is not relevant for sequence locks
+!             prevHeights[txinIndex] = (0+1);
+              continue;
+          }
+  
+
+
+********************************************************************************
+MUTANT #52:
+tx_verify.mutant.247.cpp: src/consensus/tx_verify.cpp:136
+*** Original
+--- Mutant
+***************
+*** 133,139 ****
+          return 0;
+  
+      unsigned int nSigOps = 0;
+!     for (unsigned int i = 0; i < tx.vin.size(); i++)
+      {
+          const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
+          assert(!coin.IsSpent());
+--- 133,139 ----
+          return 0;
+  
+      unsigned int nSigOps = 0;
+!     for (unsigned int i = 1; i < tx.vin.size(); i++)
+      {
+          const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
+          assert(!coin.IsSpent());
+
+
+********************************************************************************
+MUTANT #53:
+tx_verify.mutant.66.cpp: src/consensus/tx_verify.cpp:48
+*** Original
+--- Mutant
+***************
+*** 45,51 ****
+      // time constraints given our view of block chain history.
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+!     int nMinHeight = -1;
+      int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+--- 45,51 ----
+      // time constraints given our view of block chain history.
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+!     int nMinHeight = -(1-1);
+      int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+
+
+********************************************************************************
+MUTANT #54:
+tx_verify.mutant.398.cpp: src/consensus/tx_verify.cpp:191
+*** Original
+--- Mutant
+***************
+*** 188,193 ****
+--- 188,194 ----
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
++         continue;
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
+          }
+      }
+
+
+********************************************************************************
+MUTANT #55:
+tx_verify.mutant.245.cpp: src/consensus/tx_verify.cpp:136
+*** Original
+--- Mutant
+***************
+*** 133,139 ****
+          return 0;
+  
+      unsigned int nSigOps = 0;
+!     for (unsigned int i = 0; i < tx.vin.size(); i++)
+      {
+          const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
+          assert(!coin.IsSpent());
+--- 133,139 ----
+          return 0;
+  
+      unsigned int nSigOps = 0;
+!     for (unsigned int i = 0; i != tx.vin.size(); i++)
+      {
+          const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
+          assert(!coin.IsSpent());
+
+
+********************************************************************************
+MUTANT #56:
+tx_verify.mutant.211.cpp: src/consensus/tx_verify.cpp:121
+*** Original
+--- Mutant
+***************
+*** 118,124 ****
+      unsigned int nSigOps = 0;
+      for (const auto& txin : tx.vin)
+      {
+!         nSigOps += txin.scriptSig.GetSigOpCount(false);
+      }
+      for (const auto& txout : tx.vout)
+      {
+--- 118,124 ----
+      unsigned int nSigOps = 0;
+      for (const auto& txin : tx.vin)
+      {
+!         nSigOps *= txin.scriptSig.GetSigOpCount(false);
+      }
+      for (const auto& txout : tx.vout)
+      {
+
+
+********************************************************************************
+MUTANT #57:
+tx_verify.mutant.377.cpp: src/consensus/tx_verify.cpp:185
+*** Original
+--- Mutant
+***************
+*** 182,188 ****
+          // If prev is coinbase, check that it's matured
+          if (coin.IsCoinBase() && nSpendHeight - coin.nHeight < COINBASE_MATURITY) {
+              return state.Invalid(TxValidationResult::TX_PREMATURE_SPEND, "bad-txns-premature-spend-of-coinbase",
+!                 strprintf("tried to spend coinbase at depth %d", nSpendHeight - coin.nHeight));
+          }
+  
+          // Check for negative or overflow input values
+--- 182,188 ----
+          // If prev is coinbase, check that it's matured
+          if (coin.IsCoinBase() && nSpendHeight - coin.nHeight < COINBASE_MATURITY) {
+              return state.Invalid(TxValidationResult::TX_PREMATURE_SPEND, "bad-txns-premature-spend-of-coinbase",
+!                 strprintf("tried to spend coinbase at depth %d", nSpendHeight + coin.nHeight));
+          }
+  
+          // Check for negative or overflow input values
+
+
+********************************************************************************
+MUTANT #58:
+tx_verify.mutant.110.cpp: src/consensus/tx_verify.cpp:71
+*** Original
+--- Mutant
+***************
+*** 68,74 ****
+          // consensus-enforced meaning at this point.
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_DISABLE_FLAG) {
+              // The height of this input is not relevant for sequence locks
+!             prevHeights[txinIndex] = 0;
+              continue;
+          }
+  
+--- 68,74 ----
+          // consensus-enforced meaning at this point.
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_DISABLE_FLAG) {
+              // The height of this input is not relevant for sequence locks
+!             prevHeights[txinIndex] = 1;
+              continue;
+          }
+  
+
+
+********************************************************************************
+MUTANT #59:
+tx_verify.mutant.215.cpp: src/consensus/tx_verify.cpp:122
+*** Original
+--- Mutant
+***************
+*** 119,124 ****
+--- 119,125 ----
+      for (const auto& txin : tx.vin)
+      {
+          nSigOps += txin.scriptSig.GetSigOpCount(false);
++         break;
+      }
+      for (const auto& txout : tx.vout)
+      {
+
+
+********************************************************************************
+MUTANT #60:
+tx_verify.mutant.324.cpp: src/consensus/tx_verify.cpp:164
+*** Original
+--- Mutant
+***************
+*** 161,166 ****
+--- 161,167 ----
+          assert(!coin.IsSpent());
+          const CTxOut &prevout = coin.out;
+          nSigOps += CountWitnessSigOps(tx.vin[i].scriptSig, prevout.scriptPubKey, &tx.vin[i].scriptWitness, flags);
++         continue;
+      }
+      return nSigOps;
+  }
+
+
+********************************************************************************
+MUTANT #61:
+tx_verify.mutant.381.cpp: src/consensus/tx_verify.cpp:186
+*** Original
+--- Mutant
+***************
+*** 183,188 ****
+--- 183,189 ----
+          if (coin.IsCoinBase() && nSpendHeight - coin.nHeight < COINBASE_MATURITY) {
+              return state.Invalid(TxValidationResult::TX_PREMATURE_SPEND, "bad-txns-premature-spend-of-coinbase",
+                  strprintf("tried to spend coinbase at depth %d", nSpendHeight - coin.nHeight));
++                 break;
+          }
+  
+          // Check for negative or overflow input values
+
+
+********************************************************************************
+MUTANT #62:
+tx_verify.mutant.382.cpp: src/consensus/tx_verify.cpp:186
+*** Original
+--- Mutant
+***************
+*** 183,188 ****
+--- 183,189 ----
+          if (coin.IsCoinBase() && nSpendHeight - coin.nHeight < COINBASE_MATURITY) {
+              return state.Invalid(TxValidationResult::TX_PREMATURE_SPEND, "bad-txns-premature-spend-of-coinbase",
+                  strprintf("tried to spend coinbase at depth %d", nSpendHeight - coin.nHeight));
++                 continue;
+          }
+  
+          // Check for negative or overflow input values
+
+
+********************************************************************************
+MUTANT #63:
+tx_verify.mutant.345.cpp: src/consensus/tx_verify.cpp:177
+*** Original
+--- Mutant
+***************
+*** 174,180 ****
+      }
+  
+      CAmount nValueIn = 0;
+!     for (unsigned int i = 0; i < tx.vin.size(); ++i) {
+          const COutPoint &prevout = tx.vin[i].prevout;
+          const Coin& coin = inputs.AccessCoin(prevout);
+          assert(!coin.IsSpent());
+--- 174,180 ----
+      }
+  
+      CAmount nValueIn = 0;
+!     for (unsigned int i = 0; i != tx.vin.size(); ++i) {
+          const COutPoint &prevout = tx.vin[i].prevout;
+          const Coin& coin = inputs.AccessCoin(prevout);
+          assert(!coin.IsSpent());
+
+
+********************************************************************************
+MUTANT #64:
+tx_verify.mutant.273.cpp: src/consensus/tx_verify.cpp:143
+*** Original
+--- Mutant
+***************
+*** 140,145 ****
+--- 140,146 ----
+          const CTxOut &prevout = coin.out;
+          if (prevout.scriptPubKey.IsPayToScriptHash())
+              nSigOps += prevout.scriptPubKey.GetSigOpCount(tx.vin[i].scriptSig);
++             continue;
+      }
+      return nSigOps;
+  }
+
+
+********************************************************************************
+MUTANT #65:
+tx_verify.mutant.181.cpp: src/consensus/tx_verify.cpp:96
+*** Original
+--- Mutant
+***************
+*** 93,98 ****
+--- 93,99 ----
+          } else {
+              nMinHeight = std::max(nMinHeight, nCoinHeight + (int)(txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) - 1);
+          }
++         continue;
+      }
+  
+      return std::make_pair(nMinHeight, nMinTime);
+
+
+********************************************************************************
+MUTANT #66:
+tx_verify.mutant.115.cpp: src/consensus/tx_verify.cpp:73
+*** Original
+--- Mutant
+***************
+*** 70,75 ****
+--- 70,76 ----
+              // The height of this input is not relevant for sequence locks
+              prevHeights[txinIndex] = 0;
+              continue;
++             continue;
+          }
+  
+          int nCoinHeight = prevHeights[txinIndex];
+
+
+********************************************************************************
+MUTANT #67:
+tx_verify.mutant.226.cpp: src/consensus/tx_verify.cpp:126
+*** Original
+--- Mutant
+***************
+*** 123,128 ****
+--- 123,129 ----
+      for (const auto& txout : tx.vout)
+      {
+          nSigOps += txout.scriptPubKey.GetSigOpCount(false);
++         continue;
+      }
+      return nSigOps;
+  }
+
+
+********************************************************************************
+MUTANT #68:
+tx_verify.mutant.117.cpp: src/consensus/tx_verify.cpp:73
+*** Original
+--- Mutant
+***************
+*** 70,75 ****
+--- 70,76 ----
+              // The height of this input is not relevant for sequence locks
+              prevHeights[txinIndex] = 0;
+              continue;
++             break;
+          }
+  
+          int nCoinHeight = prevHeights[txinIndex];
+
+
+********************************************************************************
+MUTANT #69:
+tx_verify.mutant.138.cpp: src/consensus/tx_verify.cpp:78
+*** Original
+--- Mutant
+***************
+*** 75,81 ****
+          int nCoinHeight = prevHeights[txinIndex];
+  
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG) {
+!             int64_t nCoinTime = block.GetAncestor(std::max(nCoinHeight-1, 0))->GetMedianTimePast();
+              // NOTE: Subtract 1 to maintain nLockTime semantics
+              // BIP 68 relative lock times have the semantics of calculating
+              // the first block or time at which the transaction would be
+--- 75,81 ----
+          int nCoinHeight = prevHeights[txinIndex];
+  
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG) {
+!             int64_t nCoinTime = block.GetAncestor(std::max(nCoinHeight-1, (0+1)))->GetMedianTimePast();
+              // NOTE: Subtract 1 to maintain nLockTime semantics
+              // BIP 68 relative lock times have the semantics of calculating
+              // the first block or time at which the transaction would be
+
+
+********************************************************************************
+MUTANT #70:
+tx_verify.mutant.155.cpp: src/consensus/tx_verify.cpp:92
+*** Original
+--- Mutant
+***************
+*** 89,95 ****
+              // smallest allowed timestamp of the block containing the
+              // txout being spent, which is the median time past of the
+              // block prior.
+!             nMinTime = std::max(nMinTime, nCoinTime + (int64_t)((txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) << CTxIn::SEQUENCE_LOCKTIME_GRANULARITY) - 1);
+          } else {
+              nMinHeight = std::max(nMinHeight, nCoinHeight + (int)(txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) - 1);
+          }
+--- 89,95 ----
+              // smallest allowed timestamp of the block containing the
+              // txout being spent, which is the median time past of the
+              // block prior.
+!             nMinTime = std::max(nMinTime, nCoinTime + (int64_t)((txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) << CTxIn::SEQUENCE_LOCKTIME_GRANULARITY) - (1-1));
+          } else {
+              nMinHeight = std::max(nMinHeight, nCoinHeight + (int)(txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) - 1);
+          }
+
+
+********************************************************************************
+MUTANT #71:
+tx_verify.mutant.235.cpp: src/consensus/tx_verify.cpp:133
+*** Original
+--- Mutant
+***************
+*** 130,136 ****
+  unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
+  {
+      if (tx.IsCoinBase())
+!         return 0;
+  
+      unsigned int nSigOps = 0;
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+--- 130,136 ----
+  unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
+  {
+      if (tx.IsCoinBase())
+!         return (0+1);
+  
+      unsigned int nSigOps = 0;
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+
+
+********************************************************************************
+MUTANT #72:
+tx_verify.mutant.9.cpp: src/consensus/tx_verify.cpp:15
+*** Original
+--- Mutant
+***************
+*** 12,18 ****
+  // TODO remove the following dependencies
+  #include <chain.h>
+  #include <coins.h>
+! #include <util/moneystr.h>
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+--- 12,18 ----
+  // TODO remove the following dependencies
+  #include <chain.h>
+  #include <coins.h>
+! #include <util/moneystr.h>=
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+
+
+********************************************************************************
+MUTANT #73:
+tx_verify.mutant.0.cpp: src/consensus/tx_verify.cpp:5
+*** Original
+--- Mutant
+***************
+*** 2,8 ****
+  // Distributed under the MIT software license, see the accompanying
+  // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+  
+! #include <consensus/tx_verify.h>
+  
+  #include <consensus/consensus.h>
+  #include <primitives/transaction.h>
+--- 2,8 ----
+  // Distributed under the MIT software license, see the accompanying
+  // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+  
+! #include <consensus/tx_verify.h>=
+  
+  #include <consensus/consensus.h>
+  #include <primitives/transaction.h>
+
+
+********************************************************************************
+MUTANT #74:
+tx_verify.mutant.233.cpp: src/consensus/tx_verify.cpp:133
+*** Original
+--- Mutant
+***************
+*** 130,136 ****
+  unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
+  {
+      if (tx.IsCoinBase())
+!         return 0;
+  
+      unsigned int nSigOps = 0;
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+--- 130,136 ----
+  unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
+  {
+      if (tx.IsCoinBase())
+!         return 1;
+  
+      unsigned int nSigOps = 0;
+      for (unsigned int i = 0; i < tx.vin.size(); i++)
+
+
+********************************************************************************
+MUTANT #75:
+tx_verify.mutant.11.cpp: src/consensus/tx_verify.cpp:19
+*** Original
+--- Mutant
+***************
+*** 16,22 ****
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+!     if (tx.nLockTime == 0)
+          return true;
+      if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+--- 16,22 ----
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+  {
+!     if (tx.nLockTime <= 0)
+          return true;
+      if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+          return true;
+
+
+********************************************************************************
+MUTANT #76:
+tx_verify.mutant.136.cpp: src/consensus/tx_verify.cpp:78
+*** Original
+--- Mutant
+***************
+*** 75,81 ****
+          int nCoinHeight = prevHeights[txinIndex];
+  
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG) {
+!             int64_t nCoinTime = block.GetAncestor(std::max(nCoinHeight-1, 0))->GetMedianTimePast();
+              // NOTE: Subtract 1 to maintain nLockTime semantics
+              // BIP 68 relative lock times have the semantics of calculating
+              // the first block or time at which the transaction would be
+--- 75,81 ----
+          int nCoinHeight = prevHeights[txinIndex];
+  
+          if (txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG) {
+!             int64_t nCoinTime = block.GetAncestor(std::max(nCoinHeight-1, -1))->GetMedianTimePast();
+              // NOTE: Subtract 1 to maintain nLockTime semantics
+              // BIP 68 relative lock times have the semantics of calculating
+              // the first block or time at which the transaction would be
+
+
+********************************************************************************
+MUTANT #77:
+tx_verify.mutant.5.cpp: src/consensus/tx_verify.cpp:9
+*** Original
+--- Mutant
+***************
+*** 6,12 ****
+  
+  #include <consensus/consensus.h>
+  #include <primitives/transaction.h>
+! #include <script/interpreter.h>
+  #include <consensus/validation.h>
+  
+  // TODO remove the following dependencies
+--- 6,12 ----
+  
+  #include <consensus/consensus.h>
+  #include <primitives/transaction.h>
+! #include <script/interpreter.h>=
+  #include <consensus/validation.h>
+  
+  // TODO remove the following dependencies
+
+
+********************************************************************************
+MUTANT #78:
+tx_verify.mutant.7.cpp: src/consensus/tx_verify.cpp:13
+*** Original
+--- Mutant
+***************
+*** 10,16 ****
+  #include <consensus/validation.h>
+  
+  // TODO remove the following dependencies
+! #include <chain.h>
+  #include <coins.h>
+  #include <util/moneystr.h>
+  
+--- 10,16 ----
+  #include <consensus/validation.h>
+  
+  // TODO remove the following dependencies
+! #include <chain.h>=
+  #include <coins.h>
+  #include <util/moneystr.h>
+  
+
+
+********************************************************************************
+MUTANT #79:
+tx_verify.mutant.1.cpp: src/consensus/tx_verify.cpp:7
+*** Original
+--- Mutant
+***************
+*** 4,10 ****
+  
+  #include <consensus/tx_verify.h>
+  
+! #include <consensus/consensus.h>
+  #include <primitives/transaction.h>
+  #include <script/interpreter.h>
+  #include <consensus/validation.h>
+--- 4,10 ----
+  
+  #include <consensus/tx_verify.h>
+  
+! #include <consensus/consensus.h>=
+  #include <primitives/transaction.h>
+  #include <script/interpreter.h>
+  #include <consensus/validation.h>
+
+
+********************************************************************************
+MUTANT #80:
+tx_verify.mutant.216.cpp: src/consensus/tx_verify.cpp:122
+*** Original
+--- Mutant
+***************
+*** 119,124 ****
+--- 119,125 ----
+      for (const auto& txin : tx.vin)
+      {
+          nSigOps += txin.scriptSig.GetSigOpCount(false);
++         continue;
+      }
+      for (const auto& txout : tx.vout)
+      {
+
+
+********************************************************************************
+MUTANT #81:
+tx_verify.mutant.392.cpp: src/consensus/tx_verify.cpp:190
+*** Original
+--- Mutant
+***************
+*** 187,192 ****
+--- 187,193 ----
+  
+          // Check for negative or overflow input values
+          nValueIn += coin.out.nValue;
++         continue;
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
+          }
+
+
+********************************************************************************
+MUTANT #82:
+tx_verify.mutant.68.cpp: src/consensus/tx_verify.cpp:49
+*** Original
+--- Mutant
+***************
+*** 46,52 ****
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+      int nMinHeight = -1;
+!     int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+--- 46,52 ----
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+      int nMinHeight = -1;
+!     int64_t nMinTime = 1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+
+
+********************************************************************************
+MUTANT #83:
+tx_verify.mutant.64.cpp: src/consensus/tx_verify.cpp:48
+*** Original
+--- Mutant
+***************
+*** 45,51 ****
+      // time constraints given our view of block chain history.
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+!     int nMinHeight = -1;
+      int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+--- 45,51 ----
+      // time constraints given our view of block chain history.
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+!     int nMinHeight = -0;
+      int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+
+
+********************************************************************************
+MUTANT #84:
+tx_verify.mutant.67.cpp: src/consensus/tx_verify.cpp:49
+*** Original
+--- Mutant
+***************
+*** 46,52 ****
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+      int nMinHeight = -1;
+!     int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+--- 46,52 ----
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+      int nMinHeight = -1;
+!     int64_t nMinTime = +1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+
+
+********************************************************************************
+MUTANT #85:
+tx_verify.mutant.71.cpp: src/consensus/tx_verify.cpp:49
+*** Original
+--- Mutant
+***************
+*** 46,52 ****
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+      int nMinHeight = -1;
+!     int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+--- 46,52 ----
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+      int nMinHeight = -1;
+!     int64_t nMinTime = -(1-1);
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+      // we would be doing a signed comparison and half the range of nVersion
+
+
+********************************************************************************
+MUTANT #86:
+tx_verify.mutant.65.cpp: src/consensus/tx_verify.cpp:48
+*** Original
+--- Mutant
+***************
+*** 45,51 ****
+      // time constraints given our view of block chain history.
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+!     int nMinHeight = -1;
+      int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+--- 45,51 ----
+      // time constraints given our view of block chain history.
+      // The semantics of nLockTime are the last invalid height/time, so
+      // use -1 to have the effect of any height or time being valid.
+!     int nMinHeight = -(1+1);
+      int64_t nMinTime = -1;
+  
+      // tx.nVersion is signed integer so requires cast to unsigned otherwise
+
+
+********************************************************************************
+MUTANT #87:
+tx_verify.mutant.407.cpp: src/consensus/tx_verify.cpp:193
+*** Original
+--- Mutant
+***************
+*** 190,195 ****
+--- 190,196 ----
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
+          }
++         continue;
+      }
+  
+      const CAmount value_out = tx.GetValueOut();
+
+
+********************************************************************************
+MUTANT #88:
+tx_verify.mutant.178.cpp: src/consensus/tx_verify.cpp:95
+*** Original
+--- Mutant
+***************
+*** 92,97 ****
+--- 92,98 ----
+              nMinTime = std::max(nMinTime, nCoinTime + (int64_t)((txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) << CTxIn::SEQUENCE_LOCKTIME_GRANULARITY) - 1);
+          } else {
+              nMinHeight = std::max(nMinHeight, nCoinHeight + (int)(txin.nSequence & CTxIn::SEQUENCE_LOCKTIME_MASK) - 1);
++             continue;
+          }
+      }
+  
+
+
+********************************************************************************
+MUTANT #89:
+tx_verify.mutant.8.cpp: src/consensus/tx_verify.cpp:14
+*** Original
+--- Mutant
+***************
+*** 11,17 ****
+  
+  // TODO remove the following dependencies
+  #include <chain.h>
+! #include <coins.h>
+  #include <util/moneystr.h>
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+--- 11,17 ----
+  
+  // TODO remove the following dependencies
+  #include <chain.h>
+! #include <coins.h>=
+  #include <util/moneystr.h>
+  
+  bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
+
+
+********************************************************************************
+MUTANT #90:
+tx_verify.mutant.403.cpp: src/consensus/tx_verify.cpp:192
+*** Original
+--- Mutant
+***************
+*** 189,194 ****
+--- 189,195 ----
+          nValueIn += coin.out.nValue;
+          if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
+              return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-inputvalues-outofrange");
++             continue;
+          }
+      }
+  
+
+
